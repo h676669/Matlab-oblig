@@ -1,5 +1,5 @@
-% Taster:  QE: Venstre/Høyre  AD rulle  
-% W S Opp/Ned  P/M : Øk/Sent hastighet
+% Taster:  QE: Venstre/Hï¿½yre  AD rulle  
+% W S Opp/Ned  P/M : ï¿½k/Sent hastighet
 % V - Endre Observarsjonspunkt
 function FLYSIM
     %% Intro stuff
@@ -10,10 +10,10 @@ function FLYSIM
     SURFACES    = 100;              % 4 ->
     firstPerson = true;             % Do we start in 1st person view, or not?
     vel         = 800;              % Velocity
-    kwt         = 2560000;          % Battery Level
+    kwt         = 100;              % Battery Level
     posStart    =[-25000,0,3000];   % Start position
     forwardVec  = [1 0 0]';         % Initial direction of the plane
-    colorP      = 'magenta';           % Color of plane
+    colorP      = 'magenta';        % Color of plane
     scaleP      = 1.3;              % Scale plane 
     maxFart     = 8500;             % Max Speed of the plane
     
@@ -21,6 +21,7 @@ function FLYSIM
     textureSea = imread('bilder\sea.jpg');
     textureForrest = imread('bilder\forrest.jpg');
     textureMountain = imread('bilder\Mountain.jpg');
+    %textureIsland = imread('bilder\forrest.jpg');
         
     %% Other variables
     matRot   = eye(3);
@@ -33,6 +34,8 @@ function FLYSIM
     rot = matRot;
     s1 = []; % Surface 1
     s2 = []; % Surface 2
+    s3 = []; % Surface 3
+    sufFlat = []; %Surface sea
     pe = 0;  % Engine Sound  
     fig = figure;
     hold on;
@@ -48,6 +51,7 @@ function FLYSIM
     AddSky();
     AddSurface();
     AddIslands();
+    endreKnapp();
    
     %% Set keyboard callbacks and flags for movement.
     set(fig,'WindowKeyPressFcn',@KeyPress,'WindowKeyReleaseFcn', @KeyRelease);
@@ -85,6 +89,7 @@ function FLYSIM
         pause(1/FRAMES);
 
         UpdateFuel();
+        checkSpeed()
         ShowInfo();       
     end
     end        
@@ -128,8 +133,8 @@ function FLYSIM
         [x1,y1,z1] = peaks(SURFACES);
         x1 = x1 * 3000-51000;
         y1 = y1 * 6000;
-        z1 = z1 *300;
-        s3=surf(x1,y1,z1, ...
+        z1 = z1 * 300;
+        s3 = surf(x1,y1,z1, ...
                'LineStyle','none','AmbientStrength',0.7);
         s3.FaceColor = 'texturemap';
         s3.CData = textureDesert;
@@ -155,6 +160,13 @@ function FLYSIM
             kwt = kwt - 0.003 - vel*vel/10000000;
         end 
     end
+    function checkSpeed()
+        if(vel <=100)
+            EngineStop()
+        end
+    end
+
+
     %% Show Flight Info
     function ShowInfo()
         if (isvalid(fig)==false) 
@@ -263,7 +275,7 @@ function FLYSIM
         end
         play(pe);
     end
-    %% Engine Stop Stound
+    %% Engine Stop Sound
     function EngineStop()
         stop(pe);
     end    
@@ -277,5 +289,18 @@ function FLYSIM
     %% Get the Z of the surface given a position
     function z0 = GetZ(s, pos)
         z0 = interp2(s.XData,s.YData,s.ZData,pos(1),pos(2) );
+    end
+    function endreKnapp()
+        control = uicontrol('Style','pushbutton', ...
+            'String','Count', 'Position', [35,185,100,35], ...
+            'Callback', @f_Callback);
+
+            function f_Callback(~,~)
+                
+                
+                %s2.CData = textureSea;
+                %s3.CData = textureSea;
+                %sufFlat.CData = textureIsland;
+            end
     end
 end
