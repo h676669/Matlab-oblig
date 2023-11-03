@@ -21,7 +21,7 @@ function FLYSIM
     textureSea = imread('bilder\sea.jpg');
     textureForrest = imread('bilder\forrest.jpg');
     textureMountain = imread('bilder\Mountain.jpg');
-    %textureIsland = imread('bilder\forrest.jpg');
+    textureIsland = imread('bilder\forrest.jpg');
         
     %% Other variables
     matRot   = eye(3);
@@ -296,11 +296,12 @@ function FLYSIM
             'Callback', @f_Callback);
 
             function f_Callback(~,~)
+                % kan ikkje endre tilbake til orginal texture
                 
-                
-                %s2.CData = textureSea;
-                %s3.CData = textureSea;
-                %sufFlat.CData = textureIsland;
+                s1.CData = textureSea;
+                s2.CData = textureSea;
+                s3.CData = textureSea;
+                sufFlat.CData = textureIsland;
             end
     end
 end
