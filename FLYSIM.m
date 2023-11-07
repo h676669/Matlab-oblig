@@ -6,7 +6,7 @@ function FLYSIM
     close all
     
     %% Init Stuff - may be changed
-    FRAMES      = 180;              % 2->
+    FRAMES      = 144;              % 2->
     SURFACES    = 100;              % 4 ->
     firstPerson = true;             % Do we start in 1st person view, or not?
     vel         = 800;              % Velocity
@@ -99,6 +99,9 @@ function FLYSIM
         if  z < 0  || z < GetZ(s1, pos) || z < GetZ(s2,pos)
              Crash();
              fTC= true;
+        elseif kwt < 0 
+            crash();
+            fTC = true; 
         else   
              fTC=false;
         end
