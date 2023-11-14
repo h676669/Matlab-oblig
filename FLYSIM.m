@@ -6,11 +6,11 @@ function FLYSIM
     close all
     
     %% Init Stuff - may be changed
-    FRAMES      = 144;              % 2->
-    SURFACES    = 100;              % 4 ->
+    FRAMES      = 60;               % 2->
+    SURFACES    = 50;               % 4 ->
     firstPerson = true;             % Do we start in 1st person view, or not?
     vel         = 800;              % Velocity
-    kwt         = 100;              % Battery Level
+    kwt         = 1000;             % Battery Level
     posStart    =[-25000,0,3000];   % Start position
     forwardVec  = [1 0 0]';         % Initial direction of the plane
     colorP      = 'magenta';        % Color of plane
@@ -40,6 +40,7 @@ function FLYSIM
     fig = figure;
     hold on;
     fig.Position = [100 100 700 600];   % Size of program
+    endret = false;                     % Texture change
 
     % Disable axis viewing, don't allow axes to clip the plane
     fig.Children.Visible = 'off';
@@ -51,7 +52,6 @@ function FLYSIM
     AddSky();
     AddSurface();
     AddIslands();
-    endreKnapp();
    
     %% Set keyboard callbacks and flags for movement.
     set(fig,'WindowKeyPressFcn',@KeyPress,'WindowKeyReleaseFcn', @KeyRelease);
@@ -89,7 +89,6 @@ function FLYSIM
         pause(1/FRAMES);
 
         UpdateFuel();
-        checkSpeed()
         ShowInfo();       
     end
     end        
@@ -97,13 +96,16 @@ function FLYSIM
     function [fTC]= TestCrash()
         z = pos(3)-20;
         if  z < 0  || z < GetZ(s1, pos) || z < GetZ(s2,pos)
-             Crash();
-             fTC= true;
+            Crash();
+            fTC= true;
         elseif kwt < 0 
-            crash();
+            Crash();
+            fTC = true;
+        elseif vel <= 100
+            Crash();
             fTC = true; 
         else   
-             fTC=false;
+            fTC=false;
         end
     end
     %% Add some Islands
@@ -163,11 +165,6 @@ function FLYSIM
             kwt = kwt - 0.003 - vel*vel/10000000;
         end 
     end
-    function checkSpeed()
-        if(vel <=100)
-            EngineStop()
-        end
-    end
 
 
     %% Show Flight Info
@@ -199,6 +196,30 @@ function FLYSIM
         h(end+1)  = txt2;
         set(h, 'FontSize', 14);
         set(h, 'BackgroundColor', 'green');
+        EndreTexture = uicontrol('Style','pushbutton', ...
+            'String','endre', 'Position', [35,185,100,35], ...
+            'Callback', @f_Callback);
+
+        function f_Callback(~,~)
+            if (endret == false)
+                s1.CData = textureDesert;
+                s2.CData = textureSea;
+                s3.CData = textureMountain;
+                sufFlat.CData = textureIsland;
+                endret = true; 
+                disp("endre til standard")
+                disp(endret);
+            
+            elseif (endret == true)
+                s1.CData = textureMountain;
+                s2.CData = textureForrest;
+                s3.CData = textureDesert;
+                sufFlat.CData = textureSea;
+                endret = false; 
+                disp("endre til ustnandar");
+                disp(endret);
+            end
+        end
     end
 
     %% Initialize the plane
@@ -293,18 +314,5 @@ function FLYSIM
     function z0 = GetZ(s, pos)
         z0 = interp2(s.XData,s.YData,s.ZData,pos(1),pos(2) );
     end
-    function endreKnapp()
-        control = uicontrol('Style','pushbutton', ...
-            'String','Count', 'Position', [35,185,100,35], ...
-            'Callback', @f_Callback);
-
-            function f_Callback(~,~)
-                % kan ikkje endre tilbake til orginal texture
-                
-                s1.CData = textureSea;
-                s2.CData = textureSea;
-                s3.CData = textureSea;
-                sufFlat.CData = textureIsland;
-            end
-    end
+    
 end
