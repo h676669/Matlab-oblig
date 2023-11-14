@@ -25,18 +25,19 @@ function FLYSIM
         
     %% Other variables
     matRot   = eye(3);
-    vert = 0;                           % Vertices of the airplane
-    p1 = [];                            % The plane surfaces
-    txtKwh = 0;                         % Control kwh
-    txt1 = 0;                           % Control speed
-    txt2 = 0;                           % Control height
+    vert = 0;                       % Vertices of the airplane
+    p1 = [];                        % The plane surfaces
+    txtKwh = 0;                     % Control kwh
+    txt1 = 0;                       % Control speed
+    txt2 = 0;                       % Control height
     pos = posStart;
     rot = matRot;
-    s1 = []; % Surface 1
-    s2 = []; % Surface 2
-    s3 = []; % Surface 3
-    sufFlat = []; %Surface sea
-    pe = 0;  % Engine Sound  
+    s1 = [];                        % Surface 1
+    s2 = [];                        % Surface 2
+    s3 = [];                        % Surface 3
+    sufFlat = [];                   % Surface sea
+    pe = 0;                         % Engine Sound
+    as = 0;   
     fig = figure;
     hold on;
     fig.Position = [100 100 700 600];   % Size of program
@@ -299,6 +300,14 @@ function FLYSIM
         end
         play(pe);
     end
+    %% Make Alarm sound
+    %function AlarmSound()
+        %[lyd1, lyd2] = audioread('\lyd\DOOT.wav')
+        %as = audioplayer(lyd1, lyd2)
+        %if() hent z posijon til flyet og sjekk den til høyden på surfacen rett under flyen
+            %play(as)
+        %end
+    %end
     %% Engine Stop Sound
     function EngineStop()
         stop(pe);
