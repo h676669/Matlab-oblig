@@ -14,7 +14,7 @@ function FLYSIM
     posStart    =[-25000,0,3000];   % Start position
     forwardVec  = [1 0 0]';         % Initial direction of the plane
     colorP      = 'magenta';        % Color of plane
-    scaleP      = 1.3;              % Scale plane 
+    scaleP      = 5;                % Scale plane use 1.3 for A10 model or 5 for cessna 
     maxFart     = 1500;             % Max Speed of the plane
     telleframes = 0;                % Counts frames 
     
@@ -38,7 +38,7 @@ function FLYSIM
     s3 = [];                        % Surface 3
     sufFlat = [];                   % Surface sea
     pe = 0;                         % Engine Sound
-    as = 0;   
+    as = 0;                         % Alarm Sound
     fig = figure;
     hold on;
     fig.Position = [100 100 700 600];   % Size of program
@@ -71,21 +71,27 @@ function FLYSIM
     %% Enter the Mail Loop of Flying
     function MainLoop  
     while(ishandle(fig))
+        while(ishandle(fig))
         tnew = toc;      
         rot = rot * matRot;
-        %Update plane's center position.
+        
+        % Update plane's center position.
         z = pos(3);
         pos = vel*(rot*forwardVec*(tnew-told))' + pos;
-        %If empty battery - let the plane fall
+        
+        % If empty battery - let the plane fall
         if (kwt < 0) % No more kwh
             pos(3) = z - 100;
         end
-        %Update the plane's vertice new position and rotation
+        
+        % Update the plane's vertice new position and rotation
         p1.Vertices = (rot*vert')' + repmat(pos,[size(vert,1),1]); 
+        
         % Check if plane crashes into grounds
         if TestCrash
             return
         end    
+        
         UpdateCamera();
         told = tnew;
         pause(1/FRAMES);
@@ -93,8 +99,10 @@ function FLYSIM
         UpdateFuel();
         telleframes = telleframes + 1; 
         ShowInfo();     
+        
         if(mod(telleframes, FRAMES) == 0)
-            AlarmSound();
+            AlarmSound(pos);  % Pass the current position to AlarmSound
+        end
         end
     end
     end        
@@ -231,7 +239,7 @@ function FLYSIM
 
     %% Initialize the plane
     function InitPlane()
-        fv = stlread('a10.stl');    
+        fv = stlread('cessna.stl');    
         vert = 0;       
         delete(findobj('type', 'patch'));
         p1 = patch(fv,'FaceColor',       colorP, ...
@@ -307,14 +315,13 @@ function FLYSIM
         play(pe);
     end
     %% Make Alarm sound
-    function AlarmSound()
+    function AlarmSound(pos)
         [lyd1, lyd2] = audioread('lyd\beep-01a.wav');
         as = audioplayer(lyd1, lyd2);
-        if(GetZ(p1, pos)>= 1500)
+        if GetZ(s1, pos) >= pos(3) - 200 || GetZ(sufFlat, pos) >= pos(3) - 200
             play(as);
-            stop(as);
         end
-        disp(GetZ(p1, pos))
+        disp(GetZ(sufFlat, pos))
     end
     %% Engine Stop Sound
     function EngineStop()
@@ -331,8 +338,9 @@ function FLYSIM
     function z0 = GetZ(s, pos)
         z0 = interp2(s.XData,s.YData,s.ZData,pos(1),pos(2) );
     end
-    function landeFly()
-            if ((vel >100 && vel < 200)&& rot ) % usikker på rot delen, vet ikkje hvordan landing skal være 
+    function ChecklandeFly()
+            if ((vel >100 && vel < 200)&& rot <= 15) % usikker på rot delen, vet ikkje hvordan landing skal være 
+                disp("du har landet");
             end
     end
 end
