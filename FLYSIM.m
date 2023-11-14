@@ -15,7 +15,7 @@ function FLYSIM
     forwardVec  = [1 0 0]';         % Initial direction of the plane
     colorP      = 'magenta';        % Color of plane
     scaleP      = 1.3;              % Scale plane 
-    maxFart     = 8500;             % Max Speed of the plane
+    maxFart     = 1500;             % Max Speed of the plane
     telleframes = 0;                % Counts frames 
     
     textureDesert = imread('bilder\desert.jpg');
@@ -93,7 +93,7 @@ function FLYSIM
         UpdateFuel();
         telleframes = telleframes + 1; 
         ShowInfo();     
-        if(mod(telleframes, 10) == 0)
+        if(mod(telleframes, FRAMES) == 0)
             AlarmSound();
         end
     end
@@ -308,9 +308,9 @@ function FLYSIM
     end
     %% Make Alarm sound
     function AlarmSound()
-        [lyd1, lyd2] = audioread('lyd\DOOT.wav');
+        [lyd1, lyd2] = audioread('lyd\beep-01a.wav');
         as = audioplayer(lyd1, lyd2);
-        if(GetZ(p1, pos) >= 1500)
+        if(GetZ(p1, pos)>= 1500)
             play(as);
             stop(as);
         end
@@ -331,5 +331,4 @@ function FLYSIM
     function z0 = GetZ(s, pos)
         z0 = interp2(s.XData,s.YData,s.ZData,pos(1),pos(2) );
     end
-    
 end
