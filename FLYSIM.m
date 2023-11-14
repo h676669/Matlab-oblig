@@ -16,6 +16,7 @@ function FLYSIM
     colorP      = 'magenta';        % Color of plane
     scaleP      = 1.3;              % Scale plane 
     maxFart     = 8500;             % Max Speed of the plane
+    telleframes = 0;                % Counts frames 
     
     textureDesert = imread('bilder\desert.jpg');
     textureSea = imread('bilder\sea.jpg');
@@ -90,7 +91,11 @@ function FLYSIM
         pause(1/FRAMES);
 
         UpdateFuel();
-        ShowInfo();       
+        telleframes = telleframes + 1; 
+        ShowInfo();     
+        if(mod(telleframes, 10) == 0)
+            AlarmSound();
+        end
     end
     end        
     %%
@@ -136,6 +141,7 @@ function FLYSIM
         s2.CData = textureForrest;
 
         %% Define a desert island
+        % Spawn's behind start position
         [x1,y1,z1] = peaks(SURFACES);
         x1 = x1 * 3000-51000;
         y1 = y1 * 6000;
@@ -301,13 +307,15 @@ function FLYSIM
         play(pe);
     end
     %% Make Alarm sound
-    %function AlarmSound()
-        %[lyd1, lyd2] = audioread('\lyd\DOOT.wav')
-        %as = audioplayer(lyd1, lyd2)
-        %if() hent z posijon til flyet og sjekk den til høyden på surfacen rett under flyen
-            %play(as)
-        %end
-    %end
+    function AlarmSound()
+        [lyd1, lyd2] = audioread('lyd\DOOT.wav');
+        as = audioplayer(lyd1, lyd2);
+        if(GetZ(p1, pos) >= 1500)
+            play(as);
+            stop(as);
+        end
+        disp(GetZ(p1, pos))
+    end
     %% Engine Stop Sound
     function EngineStop()
         stop(pe);
