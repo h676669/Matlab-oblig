@@ -169,7 +169,7 @@ function FLYSIM
         if (kwt < 0)
             EngineStop();
         else
-            kwt = kwt - 0.003 - vel*vel/10000000;
+            kwt = kwt - 0.005 - vel*vel/10000000;
         end 
     end
 
@@ -330,5 +330,9 @@ function FLYSIM
     %% Get the Z of the surface given a position
     function z0 = GetZ(s, pos)
         z0 = interp2(s.XData,s.YData,s.ZData,pos(1),pos(2) );
+    end
+    function landeFly()
+            if ((vel >100 && vel < 200)&& rot ) % usikker på rot delen, vet ikkje hvordan landing skal være 
+            end
     end
 end
