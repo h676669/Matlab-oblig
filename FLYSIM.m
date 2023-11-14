@@ -214,6 +214,9 @@ function FLYSIM
         EndreTexture = uicontrol('Style','pushbutton', ...
             'String','endre', 'Position', [35,185,100,35], ...
             'Callback', @f_Callback);
+        restartKnapp = uicontrol('Style','pushbutton', ...
+                'String','restart', 'Position', [35,100,100,35], ...
+                'Callback', @restart);
 
         function f_Callback(~,~)
             if (endret == false)
@@ -234,6 +237,15 @@ function FLYSIM
                 disp("endre til ustnandar");
                 disp(endret);
             end
+        end
+        function restart(~,~)
+            pos = posStart;                 % Start pos
+            vel = 800;                      % Velocity
+            kwt = 1000;                     % Battery Level
+            p1.FaceColor = colorP;          % Color of plane
+            forwardVec = [1 0 0]';          % Initial direction of the plane
+            EngineSound();                  % Start engine sound
+            MainLoop();                     % go into main loop
         end
     end
 
