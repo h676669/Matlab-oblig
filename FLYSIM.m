@@ -70,41 +70,44 @@ function FLYSIM
 
     %% Enter the Mail Loop of Flying
     function MainLoop  
-    while(ishandle(fig))
-        while(ishandle(fig))
-        tnew = toc;      
-        rot = rot * matRot;
-        
-        % Update plane's center position.
-        z = pos(3);
-        pos = vel*(rot*forwardVec*(tnew-told))' + pos;
-        
-        % If empty battery - let the plane fall
-        if (kwt < 0) % No more kwh
-            pos(3) = z - 100;
-        end
-        
-        % Update the plane's vertice new position and rotation
-        p1.Vertices = (rot*vert')' + repmat(pos,[size(vert,1),1]); 
-        
-        % Check if plane crashes into grounds
-        if TestCrash
-            return
-        end    
-        
-        UpdateCamera();
-        told = tnew;
-        pause(1/FRAMES);
+        Landet = false; 
+        while(ishandle(fig)&& -Landet)
+            tnew = toc;      
+            rot = rot * matRot;
 
-        UpdateFuel();
-        telleframes = telleframes + 1; 
-        ShowInfo();     
-        
-        if(mod(telleframes, FRAMES) == 0)
-            AlarmSound(pos);  % Pass the current position to AlarmSound
+            % Update plane's center position.
+            z = pos(3);
+            pos = vel*(rot*forwardVec*(tnew-told))' + pos;
+
+            % If empty battery - let the plane fall
+            if (kwt < 0) % No more kwh
+                pos(3) = z - 100;
+            end
+
+            % Update the plane's vertice new position and rotation
+            p1.Vertices = (rot*vert')' + repmat(pos,[size(vert,1),1]); 
+
+            % Check if plane crashes into grounds
+            if TestCrash
+                return
+            end    
+
+            UpdateCamera();
+            told = tnew;
+            pause(1/FRAMES);
+
+            UpdateFuel();
+            telleframes = telleframes + 1; 
+            ShowInfo();     
+
+            if(mod(telleframes, FRAMES) == 0)
+                AlarmSound(pos);  
+            end
+            if(mod(telleframes, FRAMES) == 0)
+                ChecklandeFly() 
+            end
+            
         end
-        end
-    end
     end        
     %%
     function [fTC]= TestCrash()
@@ -351,8 +354,7 @@ function FLYSIM
         z0 = interp2(s.XData,s.YData,s.ZData,pos(1),pos(2) );
     end
     function ChecklandeFly()
-            if ((vel >100 && vel < 200)&& rot <= 15) % usikker på rot delen, vet ikkje hvordan landing skal være 
-                disp("du har landet");
-            end
+        if ((vel > 100 && vel < 200) && max(abs(rot(:))) <= 0.26)
+        end
     end
 end
